@@ -1,0 +1,118 @@
+Polynomial.
+Code:
+#include <stdio.h>
+#include <stdlib.h>
+struct node{
+ int coef;
+ int expo;
+ struct node *link;
+};
+struct node *attach(int coef1,int expo1,struct node *start)
+{
+ struct node *temp,*dstart;
+ temp=(struct node *)malloc(sizeof(struct node));
+ temp->coef=coef1;
+ temp->expo=expo1;
+ dstart=start->link;
+ while(dstart->link!=start)
+ dstart=dstart->link;
+ dstart->link=temp;
+ temp->link=start;
+ return start;
+}
+struct node *readpoly(struct node *start){
+ char ch='Y';
+ int coef,expo;
+ while(ch=='Y') {
+ printf("Enter Coefficient and Exponent\n");
+ scanf("%d%d",&coef,&expo);
+ start=attach(coef,expo,start);
+ printf("Do you wish to enter any more enter(Y/N)\n");
+ ch=getchar();
+scanf("%c",&ch);
+ }
+ return start;
+}
+int compare(int a,int b)
+{
+ if(a<b)
+ return -1;
+ if(a==b)
+ return 0;
+ if(a>b)
+ return 1;
+}
+struct node *polyadd(struct node *startA,struct node *startB,struct node *startC)
+{
+ int sum;
+ struct node *dstartA,*dstartB;
+ dstartA=startA->link;
+ dstartB=startB->link;
+ while(dstartA!=startA && dstartB!=startB) {
+ switch(compare(dstartA->expo,dstartB->expo)) {
+ case 1:
+ startC=attach(dstartA->coef,dstartA->expo,startC);
+ dstartA=dstartA->link;
+ break;
+ case 0:
+ sum=dstartA->coef+dstartB->coef;
+ startC=attach(sum,dstartA->expo,startC);
+ dstartA=dstartA->link;
+ dstartB=dstartB->link;
+ break;
+ case -1:
+ startC=attach(dstartB->coef,dstartB->expo,startC);
+ dstartB=dstartB->link;
+ break;
+ }
+ }
+ while(dstartA!=startA) {
+ startC=attach(dstartA->coef,dstartA->expo,startC);
+ dstartA=dstartA->link;
+ }
+ while(dstartB!=startB) {
+ startC=attach(dstartB->coef,dstartB->expo,startC);
+ dstartB=dstartB->link;
+ }
+return startC;
+}
+int main()
+{
+ struct node *startA,*startB,*startC,*dstartA,*dstartB,*dstartC;
+ startA=(struct node *)malloc(sizeof(struct node));
+ startB=(struct node *)malloc(sizeof(struct node));
+ startC=(struct node *)malloc(sizeof(struct node));
+ startA->link=startA;
+ startB->link=startB;
+ startC->link=startC;
+ printf("Reading Polynomial A\n");
+ startA=readpoly(startA);
+ printf("Reading Polynomial B\n");
+ startB=readpoly(startB);
+ dstartA=startA->link;
+ dstartB=startB->link;
+ printf("Polynomial A\n");
+ while(dstartA!=startA) {
+ printf("%d^%d",dstartA->coef,dstartA->expo);
+ dstartA=dstartA->link;
+ if(dstartA!=startA)
+ printf("+");
+ }
+ printf("\nPolynomial B\n");
+ while(dstartB!=startB) {
+ printf("%d^%d",dstartB->coef,dstartB->expo);
+ dstartB=dstartB->link;
+ if(dstartB!=startB)
+ printf("+");
+ }
+ startC=polyadd(startA,startB,startC);
+ dstartC=startC->link;
+ printf("\nPolynomial C\n");
+ while(dstartC!=startC) {
+ printf("%d^%d",dstartC->coef,dstartC->expo);
+ dstartC=dstartC->link;
+ if(dstartC!=startC)
+ printf("+");
+ }
+ return 0;
+}
